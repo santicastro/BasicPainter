@@ -49,7 +49,6 @@ void setup() {
   Serial.println("Setup finished");
   currentPos = {(double)0.0, (double)0.0};
 
-
   sendToGrbl("G90"); // absolute coordinates
   sendToGrbl("G21");
   generateTranslateGcode("G92", M1.x, M1.y, 0.0); // set zero
@@ -76,6 +75,7 @@ double distance(Point p1, Point p2) {
   Point p = getVector(p1, p2);
   return module(p);
 }
+
 void generateTranslateGcode(const char *op, double x, double y, double f) {
   sprintf(lineBuffer, "%s X", op);
   dtostrf(x, 4, 2, &lineBuffer[strlen(lineBuffer)]);
@@ -92,9 +92,10 @@ void waitForOk() {
   char c, lastc;
   while (true) {
     if (grbl.available()) {
-    c = grbl.read();
+      c = grbl.read();
       if (lastc == 'o' && c == 'k') {
         Serial.println("GRBL <- OK");
+        return;
       }
       lastc = c;
     }
